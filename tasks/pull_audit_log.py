@@ -27,17 +27,22 @@ def retry(exc: Exception, tries: int = 3, delay: float = 0.0, verbose: bool =Fal
         tries: number of times to retry the wrapped function call. When `0`, retries indefinitely.
         delay: positive wait period.
 
+    Raises:
+        A RetryLimitExceeded exception in the event that the call could not be completed after the
+        allotted number of attempts.
+
     Returns:
-        The result
+        Either the result of a successful function call (be it via retrying or not).
     """
     if tries < 0 or delay < 0:
         raise ValueError('Expected positive `tries` and `delay` values, received: '
                          f'tries {tries}, delay {delay}')
 
-    class RetryLimitExceeded(OSError):
-        pass
-
     def _f(f: Callable) -> Callable:
+
+        class RetryLimitExceeded(OSError):
+            pass
+
         @wraps(f)
         def new_f(*args: Any, **kwargs: Any) -> Any:
             res: Any = None
@@ -82,7 +87,7 @@ def paginate_audit(f: Callable) -> Callable:
            https://apidocs.threatstack.com/v2/rest-api-v2/pagination
 
     Returns:
-        A JSON object that's collected/paginated on.
+        A JSON object from a completely paginated/exhausted endpoint.
     """
 
     @wraps(f)
@@ -117,6 +122,9 @@ def get_audit(credentials: Dict[str, str], org_id: str, window: Optional[str] = 
         org_id: the unique ID of the organization you're pulling the audit log entries from.
         window: period of time from which to acquire audit log events.
         token: pagination token.
+
+    Raises:
+        A URLError in the event that the response from a request is not valid/parseable JSON.
 
     Returns:
         A JSON object containing the first 50 results of the remaining audit log entries in your organizaton.
