@@ -115,7 +115,7 @@ def paginate_audit(f: Callable[..., Optional[Dict]]) -> Callable[..., Dict[str, 
 
 
 @paginate_audit
-@retry(URLError, delay=env['RETRY_DELAY'])
+@retry(URLError)
 def get_audit(credentials: Dict[str, str], org_id: str, window: Optional[str] = None,
               token: Optional[str] = None) -> Optional[Dict]:
     """
