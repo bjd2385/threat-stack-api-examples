@@ -78,7 +78,7 @@ def retry(exc: Exception, tries: int = 3, delay: float = 0.0, verbose: bool =Fal
     return _f
 
 
-def paginate_audit(f: Callable) -> Callable:
+def paginate_audit(f: Callable[..., Optional[Dict]]) -> Callable[..., Dict[str, Union[list, str]]]:
     """
     Paginate the audit API call.
 
@@ -91,7 +91,7 @@ def paginate_audit(f: Callable) -> Callable:
     """
 
     @wraps(f)
-    def new_f(*args: Any, **kwargs: Any) -> Optional[Dict[str, Union[str, list]]]:
+    def new_f(*args: Any, **kwargs: Any) -> Dict[str, Union[list, str]]:
         obj = {
             'recs': [],
             'token': ''
