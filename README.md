@@ -9,6 +9,7 @@ Place a `.env` defining environment variables outlined in `tasks/settings.py`, i
 * `API_ID` - your user ID
 * `ORG_ID` - the organization's ID
 * `LOGLEVEL` - (optional) the logging level. See [logging and debugging](#logging-and-debugging) for further info about enabling additional logging while executing scripts.
+* `RETRY_DELAY` - (optional) request retry delay period (between requests).
 
 #### Logging and Debugging
 

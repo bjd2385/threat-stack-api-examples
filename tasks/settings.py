@@ -21,5 +21,6 @@ env = {
     'API_KEY': os.getenv('API_KEY'),
     'API_ID': os.getenv('API_ID'),
     'ORG_ID': os.getenv('ORG_ID'),
-    'LOGLEVEL': log_level
+    'LOGLEVEL': log_level,
+    'RETRY_DELAY': float(os.getenv('RETRY_DELAY'))
 }

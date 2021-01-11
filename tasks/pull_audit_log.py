@@ -24,12 +24,11 @@ from settings import env
 logging.basicConfig(level=env['LOGLEVEL'])
 
 
-def retry(exc: Type[Exception], tries: int = 3, delay: float = 0.0, verbose: bool =False) -> Callable:
+def retry(exc: Type[Exception], tries: int = 3, delay: float = 0.0) -> Callable:
     """
     A general request retry decorator with optional time delay.
 
     Args:
-        verbose: whether or not to print a message to stdout when there's a retry occurring.
         exc: exception to catch and retry on.
         tries: number of times to retry the wrapped function call. When `0`, retries indefinitely.
         delay: positive wait period.
@@ -116,7 +115,7 @@ def paginate_audit(f: Callable[..., Optional[Dict]]) -> Callable[..., Dict[str, 
 
 
 @paginate_audit
-@retry(URLError, verbose=True, delay=3.0)
+@retry(URLError, delay=env['RETRY_DELAY'])
 def get_audit(credentials: Dict[str, str], org_id: str, window: Optional[str] = None,
               token: Optional[str] = None) -> Optional[Dict]:
     """
