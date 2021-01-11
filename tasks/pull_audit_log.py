@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-A script that will pull your organization's audit log and append it to an existing local *.csv log.
+A script that will pull your organization's audit log and append it to an existing local *.csv file.
+
+TODO: Write this collection to disk.
 """
 
 from typing import Callable, Dict, Any, Optional, Union, Sequence, Type
