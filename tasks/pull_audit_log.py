@@ -24,7 +24,7 @@ from settings import env
 logging.basicConfig(level=env['LOGLEVEL'])
 
 
-def retry(exc: Type[Exception], tries: int = 3, delay: float = 0.0) -> Callable:
+def retry(exc: Type[Exception], tries: int = 3, delay: float = 3.0) -> Callable:
     """
     A general request retry decorator with optional time delay.
 
