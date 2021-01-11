@@ -18,6 +18,9 @@ def put_rule(credentials: Dict[str, str], org_id: str, ruleset_id: str, rule_id:
     """
     Make a PUT request to update a rule in an org.
 
+    Args:
+        credentials:
+
     Returns:
         A dictionary containing the request response, otherwise prints the error and returns None.
     """
