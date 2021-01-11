@@ -50,6 +50,7 @@ def put_rule(credentials: Dict[str, str], org_id: str, ruleset_id: str, rule_id:
             print('Did not get valid JSON in response - probably an error, instead:', response.text)
         else:
             print('Did not get valid JSON in response - probably an error, instead:', response.reason)
+        return None
 
 
 def main() -> None:

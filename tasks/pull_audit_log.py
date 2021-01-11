@@ -5,7 +5,7 @@
 A script that will pull your organization's audit log and append it to an existing local *.csv log.
 """
 
-from typing import Callable, Dict, Any, Optional, Union
+from typing import Callable, Dict, Any, Optional, Union, Sequence, Type
 
 import requests
 import json
@@ -22,7 +22,7 @@ from settings import env
 logging.basicConfig(level=env['LOGLEVEL'])
 
 
-def retry(exc: Exception, tries: int = 3, delay: float = 0.0, verbose: bool =False) -> Callable:
+def retry(exc: Type[Exception], tries: int = 3, delay: float = 0.0, verbose: bool =False) -> Callable:
     """
     A general request retry decorator with optional time delay.
 
@@ -81,7 +81,7 @@ def retry(exc: Exception, tries: int = 3, delay: float = 0.0, verbose: bool =Fal
     return _f
 
 
-def paginate_audit(f: Callable[..., Optional[Dict]]) -> Callable[..., Dict[str, Union[list, str]]]:
+def paginate_audit(f: Callable[..., Optional[Dict]]) -> Callable[..., Dict[str, Sequence[str]]]:
     """
     Paginate the audit API call.
 
@@ -94,7 +94,7 @@ def paginate_audit(f: Callable[..., Optional[Dict]]) -> Callable[..., Dict[str, 
     """
 
     @wraps(f)
-    def new_f(*args: Any, **kwargs: Any) -> Dict[str, Union[list, str]]:
+    def new_f(*args: Any, **kwargs: Any) -> Dict[str, Sequence[str]]:
         obj = {
             'recs': [],
             'token': ''
