@@ -9,12 +9,17 @@ from typing import Callable, Dict, Any, Optional, Union
 
 import requests
 import json
+import logging
 
 from mohawk import Sender
 from functools import wraps
 from datetime import datetime, timedelta
 from time import sleep
 from urllib.error import URLError
+from settings import env
+
+
+logging.basicConfig(level=env['LOGLEVEL'])
 
 
 def retry(exc: Exception, tries: int = 3, delay: float = 0.0, verbose: bool =False) -> Callable:
@@ -53,9 +58,7 @@ def retry(exc: Exception, tries: int = 3, delay: float = 0.0, verbose: bool =Fal
                     res = f(*args, **kwargs)
                     return True
                 except exc as msg:
-                    # TODO: implement logging instead of this flag
-                    if verbose:
-                        print(f'Retrying: {msg} ~ {res}')
+                    logging.info(f'Retrying: {msg} ~ {res}')
                     sleep(delay)
                     return False
 
@@ -98,7 +101,7 @@ def paginate_audit(f: Callable[..., Optional[Dict]]) -> Callable[..., Dict[str, 
         }
         while (s := f(*args, **kwargs)) is not None:
             obj['recs'] += s['recs']
-            print(len(obj['recs']))
+            logging.info(len(obj['recs']))
             if s['token'] is None or s['token'] == '':
                 break
             else:
@@ -136,7 +139,7 @@ def get_audit(credentials: Dict[str, str], org_id: str, window: Optional[str] = 
         url += f'?{window}'
     elif token:
         url += f'?token={token}'
-    print(url)
+    logging.info(url)
     sender = Sender(
         credentials=credentials,
         url=url,
@@ -163,8 +166,6 @@ def get_audit(credentials: Dict[str, str], org_id: str, window: Optional[str] = 
 
 
 def main() -> None:
-    from settings import env
-
     days = 1
     iso_window = f'from={(datetime.utcnow() - timedelta(days=days)).isoformat()}&until={datetime.utcnow().isoformat()}'
 
