@@ -1,6 +1,6 @@
 ### Threat Stack API example scripts
 
-This repository provides some example Python scripts for interacting with Threat Stack's API.
+This repository provides some example Python scripts for interacting with or performing common tasks with [Threat Stack's API](https://apidocs.threatstack.com/).
 
 #### How to execute a script
 
