@@ -70,7 +70,7 @@ def get_agents(credentials: Dict[str, str], org_id: str, status: Status, token: 
         A URLError in the event that the response from a request is not valid/parseable JSON.
 
     Returns:
-        A JSON object containing the first 50 results of the remaining audit log entries in your organizaton.
+        A JSON object containing the first 100 results of the remaining agent entries in your organizaton.
     """
     url = 'https://api.threatstack.com/v2/agents'
     if token:
