@@ -2,32 +2,30 @@
 # -*- coding: utf-8 -*-
 
 """
-A script that will pull your organization's audit log and append it to an existing local *.csv file.
-
-TODO: Write this collection to disk.
+Get online servers by region.
 """
 
-from typing import Callable, Dict, Any, Optional, Union, Sequence, Type
+from typing import Dict, Optional, Literal, Callable, Sequence, Any
 
 import requests
 import json
 import logging
 
 from mohawk import Sender
-from functools import wraps
-from datetime import datetime, timedelta
-from time import sleep
 from urllib.error import URLError
 from settings import env
 from utils import retry
+from functools import wraps
 
 
 logging.basicConfig(level=env['LOGLEVEL'])
 
+Status = Literal['online', 'offline']
 
-def paginate_audit(f: Callable[..., Optional[Dict]]) -> Callable[..., Dict[str, Sequence[str]]]:
+
+def paginate_agents(f: Callable[..., Optional[Dict]]) -> Callable[..., Dict[str, Sequence[str]]]:
     """
-    Paginate the audit API call.
+    Paginate the GET agents API endpoint.
 
     Args:
         f: a method that makes an API call that is paginated, according to our documentation.
@@ -40,34 +38,32 @@ def paginate_audit(f: Callable[..., Optional[Dict]]) -> Callable[..., Dict[str, 
     @wraps(f)
     def new_f(*args: Any, **kwargs: Any) -> Dict[str, Sequence[str]]:
         obj = {
-            'recs': [],
+            'agents': [],
             'token': ''
         }
         while (s := f(*args, **kwargs)) is not None:
-            obj['recs'] += s['recs']
-            logging.info(len(obj['recs']))
+            logging.debug(s)
+            obj['agents'] += s['agents']
+            logging.info(len(obj['agents']))
             if s['token'] is None or s['token'] == '':
                 break
             else:
                 kwargs['token'] = s['token']
-                if 'window' in kwargs and kwargs['window']:
-                    kwargs.pop('window')
         return obj
 
     return new_f
 
 
-@paginate_audit
+@paginate_agents
 @retry(URLError)
-def get_audit(credentials: Dict[str, str], org_id: str, window: Optional[str] = None,
-              token: Optional[str] = None) -> Optional[Dict]:
+def get_agents(credentials: Dict[str, str], org_id: str, status: Status, token: Optional[str] = None) -> Optional[Dict]:
     """
     Make a GET request to acquire logs from your org's audit endpoint.
 
     Args:
         credentials: dictionary containing a user's API credentials.
         org_id: the unique ID of the organization you're pulling the audit log entries from.
-        window: period of time from which to acquire audit log events.
+        status: state of the agent, be it online or offline.
         token: pagination token.
 
     Raises:
@@ -76,13 +72,11 @@ def get_audit(credentials: Dict[str, str], org_id: str, window: Optional[str] = 
     Returns:
         A JSON object containing the first 50 results of the remaining audit log entries in your organizaton.
     """
-    url = 'https://api.threatstack.com/v2/auditlogs'
-    if window and token:
-        url += f'?{window}&token={token}'
-    elif window:
-        url += f'?{window}'
-    elif token:
-        url += f'?token={token}'
+    url = 'https://api.threatstack.com/v2/agents'
+    if token:
+        url += f'?status={status}&token={token}'
+    elif status:
+        url += f'?status={status}'
     logging.info(url)
     sender = Sender(
         credentials=credentials,
@@ -110,19 +104,16 @@ def get_audit(credentials: Dict[str, str], org_id: str, window: Optional[str] = 
 
 
 def main() -> None:
-    days = 1
-    iso_window = f'from={(datetime.utcnow() - timedelta(days=days)).isoformat()}&until={datetime.utcnow().isoformat()}'
-
     print(
         json.dumps(
-            get_audit(
+            get_agents(
                 credentials={
                     'id': env['API_ID'],
                     'key': env['API_KEY'],
                     'algorithm': 'sha256'
                 },
                 org_id=env['ORG_ID'],
-                window=iso_window
+                status='online'
             )
         )
     )
