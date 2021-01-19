@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Get online servers by region.
+Get online servers.
 """
 
 from typing import Dict, Optional, Literal, Callable, Sequence, Any
@@ -58,7 +58,7 @@ def paginate_agents(f: Callable[..., Optional[Dict]]) -> Callable[..., Dict[str,
 @retry(URLError)
 def get_agents(credentials: Dict[str, str], org_id: str, status: Status, token: Optional[str] = None) -> Optional[Dict]:
     """
-    Make a GET request to acquire logs from your org's audit endpoint.
+    Make a GET request to acquire logs from your org's agent endpoint.
 
     Args:
         credentials: dictionary containing a user's API credentials.

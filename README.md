@@ -4,7 +4,7 @@ This repository provides some example Python scripts for interacting with or per
 
 #### How to execute a script
 
-Place a `.env` defining environment variables outlined in `tasks/settings.py`, including
+Place a `.env` defining environment variables outlined in `src/tasks/settings.py`, including
 * `API_KEY` - your personal API key
 * `API_ID` - your user ID
 * `ORG_ID` - the organization's ID
