@@ -28,8 +28,7 @@ def get_rulesets(credentials: Dict[str, str], org_id: str) -> Optional[Dict]:
 
     Args:
         credentials: dictionary containing a user's API credentials.
-        org_id: the unique ID of the organization you're pulling the audit log entries from.
-        token: pagination token.
+        org_id: the unique ID of the organization you're pulling the entries from.
 
     Raises:
         A URLError in the event that the response from a request is not valid/parseable JSON.
@@ -67,11 +66,11 @@ def get_rulesets(credentials: Dict[str, str], org_id: str) -> Optional[Dict]:
 @retry(URLError, delay=30.0)
 def get_ruleset_rule(credentials: Dict[str, str], org_id: str, ruleset_id: str, rule_id: str) -> Optional[Dict]:
     """
-    Make a GET request to acquire all
+    Make a GET request to acquire a specific rule's data under a ruleset.
 
     Args:
         credentials: dictionary containing a user's API credentials.
-        org_id: the unique ID of the organization you're pulling the audit log entries from.
+        org_id: the unique ID of the organization you're pulling the entries from.
         ruleset_id: a unique ruleset ID.
         rule_id: a unique rule ID under the ruleset's ID.
 
@@ -79,7 +78,7 @@ def get_ruleset_rule(credentials: Dict[str, str], org_id: str, ruleset_id: str, 
         A URLError in the event that the response from a request is not valid/parseable JSON.
 
     Returns:
-        A JSON object containing the
+        A JSON object containing the rule's data.
     """
     url = f'https://api.threatstack.com/v2/rulesets/{ruleset_id}/rules/{rule_id}'
     logging.info(url)
